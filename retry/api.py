@@ -28,16 +28,19 @@ def __retry_internal(f, exceptions=Exception, tries=-1, delay=0, max_delay=None,
     :returns: the result of the f function.
     """
     _tries, _delay = tries, delay
+    _retried_attempts = 0
     while _tries:
         try:
             return f()
         except exceptions as e:
             _tries -= 1
+            _retried_attempts += 1
             if not _tries:
                 raise
 
             if logger is not None:
-                logger.warning('%s, retrying in %s seconds...', e, _delay)
+                # logger.warning('%s, retrying in %s seconds...', e, _delay)
+                logger.warning(f"Error occured: \n {e}. \n Retrying in {_delay} seconds. Retry attempt: {_retried_attempts}/{tries}")
 
             time.sleep(_delay)
             _delay *= backoff
